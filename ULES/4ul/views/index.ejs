@@ -1,0 +1,22 @@
+<%- include("includes/head") %>
+<%- include("includes/nav") %>
+
+<div class="container">
+
+    <% if(msg){ %>
+        <div class="alert alert-<%= type %>"><%= msg %></div>
+    <% } %>
+
+    <h3>Uudised</h3>
+
+    <ul class="list-group">
+        <% news.forEach(n => { %>
+            <li class="list-group-item">
+                <a href="/news/<%= n.id %>"><%= n.title %></a>
+            </li>
+        <% }) %>
+    </ul>
+
+</div>
+
+<%- include("includes/footer") %>

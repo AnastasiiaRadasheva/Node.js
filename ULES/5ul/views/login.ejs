@@ -1,0 +1,19 @@
+<h1><%= title %></h1>
+
+<% if (msg) { %>
+    <p><%= msg %></p>
+<% } %>
+
+<form method="POST" action="/login">
+    <div>
+        <label>Kasutajanimi</label>
+        <input type="text" name="username">
+    </div>
+
+    <div>
+        <label>Parool</label>
+        <input type="password" name="password">
+    </div>
+
+    <button type="submit">Logi sisse</button>
+</form>

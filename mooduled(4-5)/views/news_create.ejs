@@ -1,0 +1,14 @@
+<% if (errors && errors.length) { %>
+    <ul>
+        <% errors.forEach(e => { %>
+            <li><%= e %></li>
+        <% }) %>
+    </ul>
+<% } %>
+
+<form action="/news/create" method="POST">
+    <input name="title" value="<%= formData.title %>">
+    <textarea name="content"><%= formData.content %></textarea>
+
+    <button type="submit">Salvesta</button>
+</form>
