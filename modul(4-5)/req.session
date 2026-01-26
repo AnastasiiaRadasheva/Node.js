@@ -1,0 +1,2 @@
+req.session.user = { id: 1, username: 'admin', role: 'admin' };
+res.redirect('/admin?msg=login_success');
