@@ -12,19 +12,16 @@ const {
 } = require("./database");
 
 app.use(express.urlencoded({ extended: false }));
-
 app.set("view engine", "ejs");
 
-// HOME
 app.get("/", async (req, res) => {
     const news = await getNews();
     const msg = req.query.msg || "";
     const type = req.query.type || "";
-
     res.render("index", { title: "Avaleht", news, msg, type });
 });
 
-// CREATE FORM
+
 app.get("/news/create", (req, res) => {
     res.render("news_create", {
         title: "Lisa uudis",
@@ -33,7 +30,7 @@ app.get("/news/create", (req, res) => {
     });
 });
 
-// CREATE POST
+
 app.post("/news/create", async (req, res) => {
     const { title, content } = req.body;
 
@@ -50,7 +47,7 @@ app.post("/news/create", async (req, res) => {
         return;
     }
 
-    const result = await createNews(title, content);
+    const result = await createNews(title.trim(), content.trim());
 
     if (result.affectedRows === 1) {
         res.redirect("/?msg=Uudis lisatud&type=success");
@@ -59,7 +56,7 @@ app.post("/news/create", async (req, res) => {
     }
 });
 
-// DETAIL
+
 app.get("/news/:id", async (req, res) => {
     const news = await getNewsById(req.params.id);
 
@@ -74,22 +71,28 @@ app.get("/news/:id", async (req, res) => {
     res.render("news", { title: news.title, news, msg, type });
 });
 
-// EDIT FORM
+
 app.get("/news/edit/:id", async (req, res) => {
     const news = await getNewsById(req.params.id);
+
+    if (!news) {
+        res.status(404).render("404", { title: "404" });
+        return;
+    }
+
     res.render("news_edit", { title: "Muuda", errors: [], news });
 });
 
-// EDIT POST
+
 app.post("/news/edit/:id", async (req, res) => {
     const { title, content } = req.body;
     const id = req.params.id;
 
     const errors = [];
-    if (!title) errors.push("Pealkiri on kohustuslik");
-    if (!content) errors.push("Sisu on kohustuslik");
+    if (!title || title.trim() === "") errors.push("Pealkiri on kohustuslik");
+    if (!content || content.trim() === "") errors.push("Sisu on kohustuslik");
 
-    if (errors.length) {
+    if (errors.length > 0) {
         res.render("news_edit", {
             title: "Muuda",
             errors,
@@ -98,11 +101,16 @@ app.post("/news/edit/:id", async (req, res) => {
         return;
     }
 
-    await updateNewsById(id, title, content);
-    res.redirect(`/news/${id}?msg=Muudetud&type=success`);
+    const result = await updateNewsById(id, title.trim(), content.trim());
+
+    if (result.affectedRows === 1) {
+        res.redirect(`/news/${id}?msg=Muudetud&type=success`);
+    } else {
+        res.redirect(`/news/${id}?msg=Viga&type=danger`);
+    }
 });
 
-// DELETE
+
 app.post("/news/delete", async (req, res) => {
     const result = await deleteNewsById(req.body.id);
 
@@ -113,7 +121,7 @@ app.post("/news/delete", async (req, res) => {
     }
 });
 
-// 404
+
 app.use((req, res) => {
     res.status(404).render("404", { title: "404" });
 });

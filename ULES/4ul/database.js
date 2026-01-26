@@ -8,22 +8,17 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME
 });
 
-// READ
+
 async function getNews() {
     const [rows] = await pool.query("SELECT * FROM news ORDER BY id DESC");
     return rows;
 }
 
-// READ
 async function getNewsById(id) {
-    const [rows] = await pool.query(
-        "SELECT * FROM news WHERE id = ?",
-        [id]
-    );
+    const [rows] = await pool.query("SELECT * FROM news WHERE id = ?", [id]);
     return rows[0];
 }
 
-// CREATE
 async function createNews(title, content) {
     const [result] = await pool.execute(
         "INSERT INTO news (title, content, created_at) VALUES (?, ?, NOW())",
@@ -32,7 +27,6 @@ async function createNews(title, content) {
     return result;
 }
 
-// UPDATE
 async function updateNewsById(id, title, content) {
     const [result] = await pool.execute(
         "UPDATE news SET title = ?, content = ? WHERE id = ?",
@@ -41,7 +35,6 @@ async function updateNewsById(id, title, content) {
     return result;
 }
 
-// DELETE
 async function deleteNewsById(id) {
     const [result] = await pool.execute(
         "DELETE FROM news WHERE id = ?",
